@@ -16,7 +16,7 @@ public class ShapesManager : MonoBehaviour
     private int score;
 
     public readonly Vector2 BottomRight = new Vector2(-2.37f, -4.27f);
-    public readonly Vector2 CandySize = new Vector2(0.7f, 0.7f);
+    public readonly Vector2 CandySize = new Vector2(1.25f, 1.25f);
 
     private GameState state = GameState.None;
     private GameObject hitGo = null;
@@ -190,13 +190,17 @@ public class ShapesManager : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 //get the hit position
-                var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                if (hit.collider != null) //we have a hit!!!
+                //var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+                if (Physics.Raycast(ray, out hit, 100.0f))
                 {
                     hitGo = hit.collider.gameObject;
                     state = GameState.SelectionStarted;
                 }
-                
+
             }
         }
         else if (state == GameState.SelectionStarted)
@@ -204,11 +208,14 @@ public class ShapesManager : MonoBehaviour
             //user dragged
             if (Input.GetMouseButton(0))
             {
-                
 
-                var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                // var hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+                RaycastHit hit;
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 //we have a hit
-                if (hit.collider != null && hitGo != hit.collider.gameObject)
+                // if (hit.collider != null && hitGo != hit.collider.gameObject)
+                if (Physics.Raycast(ray, out hit, 100.0f) && hitGo != hit.collider.gameObject)
                 {
 
                     //user did a hit, no need to show him hints 
@@ -238,8 +245,11 @@ public class ShapesManager : MonoBehaviour
     /// <param name="hitGo2"></param>
     private void FixSortingLayer(GameObject hitGo, GameObject hitGo2)
     {
-        SpriteRenderer sp1 = hitGo.GetComponent<SpriteRenderer>();
-        SpriteRenderer sp2 = hitGo2.GetComponent<SpriteRenderer>();
+        //SpriteRenderer sp1 = hitGo.GetComponent<SpriteRenderer>();
+        var sp1 = hitGo.GetComponent<Renderer>();
+        //SpriteRenderer sp2 = hitGo2.GetComponent<SpriteRenderer>();
+        var sp2 = hitGo2.GetComponent<Renderer>();
+
         if (sp1.sortingOrder <= sp2.sortingOrder)
         {
             sp1.sortingOrder = 1;
@@ -250,7 +260,7 @@ public class ShapesManager : MonoBehaviour
 
 
 
-    private IEnumerator FindMatchesAndCollapse(RaycastHit2D hit2)
+    private IEnumerator FindMatchesAndCollapse(RaycastHit hit2)
     {
         //get the second item that was part of the swipe
         var hitGo2 = hit2.collider.gameObject;
@@ -507,9 +517,11 @@ public class ShapesManager : MonoBehaviour
             {
                 if (item == null) break;
 
-                Color c = item.GetComponent<SpriteRenderer>().color;
+                //Color c = item.GetComponent<SpriteRenderer>().color;
+                Color c = item.GetComponent<Renderer>().material.color;
                 c.a = 1.0f;
-                item.GetComponent<SpriteRenderer>().color = c;
+                //item.GetComponent<SpriteRenderer>().color = c;
+                item.GetComponent<Renderer>().material.color = c;
             }
     }
 
